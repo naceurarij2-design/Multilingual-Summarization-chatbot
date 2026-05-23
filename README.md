@@ -30,4 +30,28 @@ To achieve highly cohesive, ChatGPT-grade abstractive flow and prevent disjointe
 
 ### 📊 Key Outcomes
 * **Trainable Parameters:** ~9.4M weights (only **0.68%** of the global model size), keeping the final adapter export incredibly lightweight (a few megabytes) while preserving the foundational multilingual knowledge of mBART-50.
+⚡ Phase 3 : Automated Statistical Evaluation & Benchmarking
+Objective & Scope:
+Established a mathematically rigorous, standalone evaluation framework to benchmark the performance of the fine-tuned mBART-large-50 adapter model on completely unseen text samples (the isolated 10% test split layer, anchored with seed=42).
+
+Core Components Implemented:
+
+Metric Framework Integration: Leveraged Hugging Face's evaluate library to run parallel text-matching validation via ROUGE-1, ROUGE-2, ROUGE-L, and BLEU scoring matrices.
+
+Synchronized Prompt Injection: Integrated structural inputs (<SUMMARY>: {doc}) into the evaluation pipeline to match the exact format used during Phase 3 fine-tuning, preventing formatting confusion.
+
+Device-Aware Hardware Routing: Configured dynamic device routing (cuda execution) to ensure both the model weights and attention vectors sit on the same hardware platform, avoiding runtime device mismatches and drastically cutting down inference time.
+
+Mathematical Balance Calibration:
+To prevent the model from falling into literal "copy-paste" loops (which artificially inflate ROUGE scores at the cost of actual summarization), the generation engine was tuned to a precise mathematical sweet spot:
+
+Activated creative sampling (do_sample=True) with a disciplined temperature framework (temperature=0.45) and targeted vocabulary mapping (top_p=0.85).
+
+Maintained beam search structure (num_beams=4) paired with an anti-copying restriction (repetition_penalty=1.20, no_repeat_ngram_size=3) to ensure fluid, abstractive compression instead of raw text extraction.
+
+Outputs Generated:
+
+Automated a live console stream tracking side-by-side textual comparisons between ground-truth reference summaries and live model generations.
+
+Maintained data persistence by auto-saving finalized performance metrics to a structured CSV archive (evaluation_metrics.csv) within Google Drive for continuous project tracking.
 * **Artifact Generation:** The script successfully checkpoints tracking data to Google Drive and exports a highly-optimized, localized adapter directory (`final_multilingual_adapter`) ready to be dynamically hot-swapped into our Phase 4 production interface.
